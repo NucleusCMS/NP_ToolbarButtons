@@ -1,36 +1,36 @@
 <?php 
 class NP_ToolbarButtons extends NucleusPlugin { 
-	function getName() { return 'NP_ToolbarButtons'; } 
-	function getAuthor()  { return 'Katsumi + nakahara21'; } 
-	function getVersion() { return '0.3.5'; } 
-	function getURL() { return 'http://japan.nucleuscms.org/bb/viewtopic.php?t=3413';} 
-	function getMinNucleusVersion() { return 250; } 
-	function getDescription() { return $this->getName().' plugin'; } 
-	function supportsFeature($what) { return (int)($what=='SqlTablePrefix'); } 
-	function getEventList() { return array('PrepareItemForEdit', 'PreAddItemForm', 
-		'AdminPrePageHead', 'AdminPrePageFoot', 
-		'AddItemFormExtras', 'EditItemFormExtras', 
-		'PreToolbarParse','PrePluginOptionsEdit'); } 
-	function install(){
-		$this->createOption("lbtns", _TOOLBARBUTTONS_CODESBEFOREDEFAULT, "textarea",''."\n");
-		$this->createOption("rbtns", _TOOLBARBUTTONS_CODESAFTERDEFAULT, "textarea",''."\n");
-		$this->createOption("addscripts", _TOOLBARBUTTONS_ADDITIONALSCRIPTS, "textarea",''."\n");
-	}
-	function event_PrePluginOptionsEdit(&$data) {
-		if ($data['context']!='global' || $data['plugid']!=$this->getID()) return;
-		foreach($data['options'] as $tmp){
-			switch($tmp['name']){
-			case 'lbtns':
-				$lbtns = 'plugoption['.$tmp['oid'].']['.$tmp['contextid'].']';
-				break;
-			case 'rbtns':
-				$rbtns = 'plugoption['.$tmp['oid'].']['.$tmp['contextid'].']';
-				$oid = $tmp['oid'];
-			default:
-				break;
-			}
-		}
-		$maker = '
+    function getName() { return 'NP_ToolbarButtons'; } 
+    function getAuthor()  { return 'Katsumi + nakahara21'; } 
+    function getVersion() { return '0.3.5'; } 
+    function getURL() { return 'http://japan.nucleuscms.org/bb/viewtopic.php?t=3413';} 
+    function getMinNucleusVersion() { return 250; } 
+    function getDescription() { return $this->getName().' plugin'; } 
+    function supportsFeature($what) { return (int)($what=='SqlTablePrefix'); } 
+    function getEventList() { return array('PrepareItemForEdit', 'PreAddItemForm', 
+        'AdminPrePageHead', 'AdminPrePageFoot', 
+        'AddItemFormExtras', 'EditItemFormExtras', 
+        'PreToolbarParse','PrePluginOptionsEdit'); } 
+    function install(){
+        $this->createOption("lbtns", _TOOLBARBUTTONS_CODESBEFOREDEFAULT, "textarea",''."\n");
+        $this->createOption("rbtns", _TOOLBARBUTTONS_CODESAFTERDEFAULT, "textarea",''."\n");
+        $this->createOption("addscripts", _TOOLBARBUTTONS_ADDITIONALSCRIPTS, "textarea",''."\n");
+    }
+    function event_PrePluginOptionsEdit(&$data) {
+        if ($data['context']!='global' || $data['plugid']!=$this->getID()) return;
+        foreach($data['options'] as $tmp){
+            switch($tmp['name']){
+            case 'lbtns':
+                $lbtns = 'plugoption['.$tmp['oid'].']['.$tmp['contextid'].']';
+                break;
+            case 'rbtns':
+                $rbtns = 'plugoption['.$tmp['oid'].']['.$tmp['contextid'].']';
+                $oid = $tmp['oid'];
+            default:
+                break;
+            }
+        }
+        $maker = '
 <form style="margin:0;"><table>
 <tr>
   <td>'._TOOLBARBUTTONS_BUTTONTYPE.'</td>
@@ -64,9 +64,9 @@ class NP_ToolbarButtons extends NucleusPlugin {
   </td>
 </tr>
 </form></table>';
-		$maker=str_replace(array("\r","\n"),'',$maker);
+        $maker=str_replace(array("\r","\n"),'',$maker);
 
-		$data['options'][$oid]['extra'] .= '
+        $data['options'][$oid]['extra'] .= '
 <script type="text/javascript">
 //<![CDATA[
 function inserButtons(){ 
@@ -92,16 +92,16 @@ function inserButtons(){
     tag = tag + "\">\\n\\t\\t\\t";
     tag = tag + document.getElementById("buttoncode").value;
     tag = tag + "\\n\\t\\t\\t</span>\\n";
-  document.getElementById("inputcodes").value += tag;		
+  document.getElementById("inputcodes").value += tag;        
 }
 function reflectButtons(lr) {
   elName = ["'.$lbtns.'","'.$rbtns.'"];
-  data = document.getElementById("inputcodes").value;		
+  data = document.getElementById("inputcodes").value;        
   ElementsList = document.getElementsByName(elName[lr]);
   for (i = 0; i < ElementsList.length; i++) {
     ElementsList[i].value += data;
   }
-  document.getElementById("inputcodes").value = "";		
+  document.getElementById("inputcodes").value = "";        
 }
 function helperinit() {
   var htitle = document.getElementsByTagName("h2");
@@ -119,76 +119,76 @@ function helperinit() {
 window.onload = helperinit;
 //]]>
 </script>';
-	}
-	function event_PrepareItemForEdit(&$data){ $this->before(); } 
-	function event_PreAddItemForm(&$data){ $this->before(); } 
-	var $usefoot=false; 
-	function event_AdminPrePageHead(&$data){ $this->usefoot=true; } 
-	function event_AdminPrePageFoot(&$data){ $this->after(); } 
-	function event_AddItemFormExtras(&$data){ if (!$this->usefoot) $this->after(); } 
-	function event_EditItemFormExtras(&$data){ if (!$this->usefoot) $this->after(); } 
-	var $ob_ok=false; 
-	function before() { $this->ob_ok=ob_start(); } 
-	function after() { 
-		global $manager; 
-		if (!$this->ob_ok) return; 
-		$buff=ob_get_contents(); 
-		ob_end_clean(); 
-		$lbutton=''; 
-		$rbutton=''; 
-		$script=''; 
-		$pattern='/<div([^>]*?)class="jsbuttonbar"([^>]*?)>/'; 
-		if (preg_match($pattern,$buff,$matches)){ 
-			$manager->notify('PreToolbarParse',array('lbutton' => &$lbutton, 'rbutton' => &$rbutton, 'script' => &$script)); 
-			$buff=str_replace($matches[0],$matches[0].$lbutton,$buff); 
-			$pattern=array('/<\/div>([^<]*?)<textarea([^>]*?)id="inputbody"([^>]*?)>/', 
-				'/<\/div>([^<]*?)<textarea([^>]*?)id="inputmore"([^>]*?)>/'); 
-			$replace=array('</div><textarea$2id="inputbody"$3>', 
-				'</div><textarea$2id="inputmore"$3>'); 
-			$buff=preg_replace($pattern,$replace,$buff); 
-			$pattern='/<\/div><textarea([^>]*?)id="inputbody"([^>]*?)>/'; 
-			if (preg_match($pattern,$buff,$matches)){ 
-				$buff=str_replace($matches[0],$rbutton.$matches[0],$buff); 
-			} 
-			$pattern='/<\/div><textarea([^>]*?)id="inputmore"([^>]*?)>/'; 
-			if (preg_match($pattern,$buff,$matches)){ 
-				$buff=str_replace($matches[0],$rbutton.$matches[0],$buff); 
-			} 
-		} 
-		echo $buff.$script; 
-	} 
-	function event_PreToolbarParse(&$data) { 
-		global $CONF;
-		$lbutton=&$data['lbutton']; 
-		$rbutton=&$data['rbutton']; 
-		$script=&$data['script'];
-		
-		$setOptionURL = $CONF['AdminURL'] . 'index.php?action=pluginoptions&amp;plugid=' . $this->getID();
+    }
+    function event_PrepareItemForEdit(&$data){ $this->before(); } 
+    function event_PreAddItemForm(&$data){ $this->before(); } 
+    var $usefoot=false; 
+    function event_AdminPrePageHead(&$data){ $this->usefoot=true; } 
+    function event_AdminPrePageFoot(&$data){ $this->after(); } 
+    function event_AddItemFormExtras(&$data){ if (!$this->usefoot) $this->after(); } 
+    function event_EditItemFormExtras(&$data){ if (!$this->usefoot) $this->after(); } 
+    var $ob_ok=false; 
+    function before() { $this->ob_ok=ob_start(); } 
+    function after() { 
+        global $manager; 
+        if (!$this->ob_ok) return; 
+        $buff=ob_get_contents(); 
+        ob_end_clean(); 
+        $lbutton=''; 
+        $rbutton=''; 
+        $script=''; 
+        $pattern='/<div([^>]*?)class="jsbuttonbar"([^>]*?)>/'; 
+        if (preg_match($pattern,$buff,$matches)){ 
+            $manager->notify('PreToolbarParse',array('lbutton' => &$lbutton, 'rbutton' => &$rbutton, 'script' => &$script)); 
+            $buff=str_replace($matches[0],$matches[0].$lbutton,$buff); 
+            $pattern=array('/<\/div>([^<]*?)<textarea([^>]*?)id="inputbody"([^>]*?)>/', 
+                '/<\/div>([^<]*?)<textarea([^>]*?)id="inputmore"([^>]*?)>/'); 
+            $replace=array('</div><textarea$2id="inputbody"$3>', 
+                '</div><textarea$2id="inputmore"$3>'); 
+            $buff=preg_replace($pattern,$replace,$buff); 
+            $pattern='/<\/div><textarea([^>]*?)id="inputbody"([^>]*?)>/'; 
+            if (preg_match($pattern,$buff,$matches)){ 
+                $buff=str_replace($matches[0],$rbutton.$matches[0],$buff); 
+            } 
+            $pattern='/<\/div><textarea([^>]*?)id="inputmore"([^>]*?)>/'; 
+            if (preg_match($pattern,$buff,$matches)){ 
+                $buff=str_replace($matches[0],$rbutton.$matches[0],$buff); 
+            } 
+        } 
+        echo $buff.$script; 
+    } 
+    function event_PreToolbarParse(&$data) { 
+        global $CONF;
+        $lbutton=&$data['lbutton']; 
+        $rbutton=&$data['rbutton']; 
+        $script=&$data['script'];
+        
+        $setOptionURL = $CONF['AdminURL'] . 'index.php?action=pluginoptions&amp;plugid=' . $this->getID();
 
-		// Left buttons
-		$lbutton.='
+        // Left buttons
+        $lbutton.='
 <div style="padding-top:4px;padding-bottom:4px;margin-bottom:1px;">
 '.$this->getOption('lbtns').'
 </div>
 <div style="padding-top:4px;padding-bottom:4px;">'."\n";
 
-		// Right buttons
-		$rbutton.='
+        // Right buttons
+        $rbutton.='
 </div>
 <div style="padding-top:4px;padding-bottom:4px;margin-top:1px;">
 '.$this->getOption('rbtns')."
-\t\t	<span class=\"jsbutton\" 
-\t\t	onmouseover=\"BtnHighlight(this);\" 
-\t\t	onmouseout=\"BtnNormal(this);\" 
-\t\t	onclick=\"entitiesCaret()\" 
-\t\t	title=\"toEntities\" >
-\t\t	&amp;lt;
-\t\t	</span>".'
+\t\t    <span class=\"jsbutton\" 
+\t\t    onmouseover=\"BtnHighlight(this);\" 
+\t\t    onmouseout=\"BtnNormal(this);\" 
+\t\t    onclick=\"entitiesCaret()\" 
+\t\t    title=\"toEntities\" >
+\t\t    &amp;lt;
+\t\t    </span>".'
 <a href="'.$setOptionURL.'">Edit Buttons</a>
 </div>'."\n";
 
-		// Additional scripts
-		$script.= '
+        // Additional scripts
+        $script.= '
 <script type="text/javascript">
 //<![CDATA[
 '.$this->getOption('addscripts').'
@@ -205,12 +205,11 @@ function entitiesCaret () {
 }
 //]]>
 </script>';
-	} 
-	function init(){
-		// include language file for this plugin
-		$language = $this->getDirectory().str_replace( array('\\','/'), '', getLanguageName()).'.php';
-		if (file_exists($language)) include_once($language);
-		else include_once($this->getDirectory().'english.php');
-	}
+    } 
+    function init(){
+        // include language file for this plugin
+        $language = $this->getDirectory().str_replace( array('\\','/'), '', getLanguageName()).'.php';
+        if (file_exists($language)) include_once($language);
+        else include_once($this->getDirectory().'english.php');
+    }
 } 
-?>
