@@ -1,6 +1,6 @@
 <?php
 class NP_ToolbarButtons extends NucleusPlugin {
-    function getName()              { return 'NP_ToolbarButtons'; }
+    function getName()              { return __CLASS__; }
     function getAuthor()            { return 'Katsumi + nakahara21'; }
     function getVersion()           { return '0.3.5'; }
     function getURL()               { return 'http://japan.nucleuscms.org/bb/viewtopic.php?t=3413';}
