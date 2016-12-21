@@ -208,7 +208,7 @@ function entitiesCaret () {
 	} 
 	function init(){
 		// include language file for this plugin
-		$language = $this->getDirectory().ereg_replace( '[\\|/]', '', getLanguageName()).'.php';
+		$language = $this->getDirectory().str_replace( array('\\','/'), '', getLanguageName()).'.php';
 		if (file_exists($language)) include_once($language);
 		else include_once($this->getDirectory().'english.php');
 	}
