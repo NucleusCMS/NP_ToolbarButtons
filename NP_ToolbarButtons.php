@@ -30,40 +30,21 @@ class NP_ToolbarButtons extends NucleusPlugin {
                 break;
             }
         }
-        $maker = '
-<form style="margin:0;"><table>
-<tr>
-  <td>'._TOOLBARBUTTONS_BUTTONTYPE.'</td>
-  <td><input type="radio" name="inc_mode" value="3" tabindex="120" checked="checked" id="btn_type_a" /><label for="btn_type_a">A: '._TOOLBARBUTTONS_ADDTAGS.'</label> <br />
-      <input type="radio" name="inc_mode" value="5"  id="btn_type_b" /><label for="btn_type_b">B: '._TOOLBARBUTTONS_INSERTTEXT.'</label></td>
-</tr>
-<tr>
-  <td>'._TOOLBARBUTTONS_CODEBEFORE.'</td>
-  <td><input id="preadd" size="40" maxlength="160" value="" />('._TOOLBARBUTTONS_BOTHAB.')</td>
-</tr>
-<tr>
-  <td nowrap>'._TOOLBARBUTTONS_CODEAFTER.'</td>
-  <td><input id="postadd" size="40" maxlength="160" value="" />('._TOOLBARBUTTONS_AONLY.')</td>
-</tr>
-<tr>
-  <td>'._TOOLBARBUTTONS_TIP.'</td>
-  <td><input id="inputtitle" size="40" maxlength="160" value="" /></td>
-</tr>
-<tr>
-  <td>'._TOOLBARBUTTONS_BUTTONCAPTION.'</td>
-  <td><input id="buttoncode" size="40" maxlength="160" value="" />('._TOOLBARBUTTONS_BOTHAB.')</td>
-</tr>
-<tr>
-  <td colspan="2"><INPUT TYPE="button" VALUE="'._TOOLBARBUTTONS_CREATECODE.'" onClick="inserButtons()"><span id="so" style="color:red;"></span></td>
-</tr>
-<tr>
-  <td colspan="2">
-    <textarea cols="60" rows="12" id="inputcodes" ></textarea><br />
-    <INPUT TYPE="button" VALUE="'._TOOLBARBUTTONS_ADDBEFORE.'" onClick="reflectButtons(0)">
-    <INPUT TYPE="button" VALUE="'._TOOLBARBUTTONS_ADDAFTER.'" onClick="reflectButtons(1)">
-  </td>
-</tr>
-</form></table>';
+        $tpl = file_get_contents($this->getDirectory().'maker.tpl');
+        $ph['buttontype']    = _TOOLBARBUTTONS_BUTTONTYPE;
+        $ph['addtags']       = _TOOLBARBUTTONS_ADDTAGS;
+        $ph['inserttext']    = _TOOLBARBUTTONS_INSERTTEXT;
+        $ph['codebefore']    = _TOOLBARBUTTONS_CODEBEFORE;
+        $ph['bothab']        = _TOOLBARBUTTONS_BOTHAB;
+        $ph['codeafter']     = _TOOLBARBUTTONS_CODEAFTER;
+        $ph['aonly']         = _TOOLBARBUTTONS_AONLY;
+        $ph['tip']           = _TOOLBARBUTTONS_TIP;
+        $ph['buttoncaption'] = _TOOLBARBUTTONS_BUTTONCAPTION;
+        $ph['bothab']        = _TOOLBARBUTTONS_BOTHAB;
+        $ph['createcode']    = _TOOLBARBUTTONS_CREATECODE;
+        $ph['addbefore']     = _TOOLBARBUTTONS_ADDBEFORE;
+        $ph['addafter']      = _TOOLBARBUTTONS_ADDAFTER;
+        $maker = $this->parseText($tpl,$ph);
         $maker=str_replace(array("\r","\n"),'',$maker);
 
         $data['options'][$oid]['extra'] .= '
