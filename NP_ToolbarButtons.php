@@ -213,4 +213,11 @@ function entitiesCaret () {
         if (file_exists($language)) include_once($language);
         else include_once($this->getDirectory().'english.php');
     }
+    
+    function parseText($tpl, $ph) {
+        foreach($ph as $k=>$v) {
+            $tpl = str_replace("<%{$k}%>", $v, $tpl);
+        }
+        return $tpl;
+    }
 }
