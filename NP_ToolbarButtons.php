@@ -2,11 +2,11 @@
 class NP_ToolbarButtons extends NucleusPlugin {
     function getName()              { return __CLASS__; }
     function getAuthor()            { return 'Katsumi + nakahara21'; }
-    function getVersion()           { return '0.3.5'; }
+    function getVersion()           { return '0.4'; }
     function getURL()               { return 'http://japan.nucleuscms.org/bb/viewtopic.php?t=3413';}
-    function getMinNucleusVersion() { return 250; }
+    function getMinNucleusVersion() { return 380; }
     function getDescription()       { return $this->getName().' plugin'; }
-    function supportsFeature($what) { return (int)($what=='SqlTablePrefix'); }
+    function supportsFeature($key)  { return (int)in_array($key, array('NoSql')); }
     function getEventList()         { return array('PrepareItemForEdit', 'PreAddItemForm',
         'AdminPrePageHead', 'AdminPrePageFoot',
         'AddItemFormExtras', 'EditItemFormExtras',
